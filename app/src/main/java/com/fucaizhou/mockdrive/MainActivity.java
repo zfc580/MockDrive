@@ -108,6 +108,7 @@ public class MainActivity extends Activity implements AMapLocationListener {
         mGpsText = (TextView) findViewById(R.id.gps_text);
         mGpsTitle = (TextView) findViewById(R.id.gps_title);
         mShowBtn = (Button) findViewById(R.id.show_panel);
+        mRemoveBtn = (Button) findViewById(R.id.remove_panel);
         mHelpBtn = (Button) findViewById(R.id.help_btn);
         mHelpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +116,7 @@ public class MainActivity extends Activity implements AMapLocationListener {
                 startActivity(new Intent(MainActivity.this,HelpActivity.class));
             }
         });
-        mRemoveBtn = (Button) findViewById(R.id.remove_panel);
+
         mSetOriBtn = (Button) findViewById(R.id.set_origin);
 
 //        mSetOriBtn.setOnClickListener(new View.OnClickListener() {

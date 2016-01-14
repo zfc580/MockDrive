@@ -288,7 +288,7 @@ public class MockService extends Service {
         mLocation.setLongitude(latlon[1]);
         mLocation.setBearing(bearing);
         mLocation.setAccuracy(70);
-        mLocation.setSpeed(11);
+        mLocation.setSpeed(dis_array[mManager.current_Gear]/1);//每秒移动dis_array[i]的距离
         mLocation.setTime(System.currentTimeMillis());
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
