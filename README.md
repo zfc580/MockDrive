@@ -1,6 +1,2 @@
-# MockDrive
-test pull
-test commit
-test username
-test 1
-test 2
+GPS方向盘：
+模拟GPS导航场景，通过方向键控制方向时GPS位置信号朝着指定方向移动。
