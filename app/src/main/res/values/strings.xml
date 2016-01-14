@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">MockDrive</string>
+    <string name="app_name">GPS方向盘</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="help_text_title">使用说明</string>
-    <string name="help_details">使用说明：\n
-        1.请先打开系统设置-开发者选项-允许模拟位置;\n
-        2.点击“打开悬浮窗”会弹出一个方向按钮盘，单击某一方向按钮，GPS会沿该方向移动一小段，长按则一直移动知道放开该按钮;\n
+    <string name="help_details">使用说明：\n\n
+        1.请先打开系统设置-开发者选项-允许模拟位置;\n\n
+        2.点击“打开悬浮窗”会弹出一个方向按钮盘，点击左右按钮控制车标箭头方向，向左逆时针，向右顺时针，向上前进，左上控制速度；\n\n
         3.模拟的GPS点会从定位点开始移动，如果没有定位，则从厦门市中心一个固定点开始移动；</string>
 </resources>

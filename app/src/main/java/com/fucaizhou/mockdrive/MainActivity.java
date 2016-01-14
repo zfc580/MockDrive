@@ -140,12 +140,16 @@ public class MainActivity extends Activity implements AMapLocationListener {
             }
         });
         mGoogleLocListener = new LocationListener() {
+            /**
+             * 该方法为GPS位置回调，模拟GPS和真实GPS都通过该回调返回
+             * @param location
+             */
             @Override
             public void onLocationChanged(Location location) {
                 if(mListener != null){
                     mListener.onLocationChanged(location);// 显示系统小蓝点
                 }
-                Log.i(MockService.TAG, "onLocationChanged location:" + location.getLongitude() + "," + location.getLatitude());
+                //Log.i(MockService.TAG, "onLocationChanged location:" + location.getLongitude() + "," + location.getLatitude());
                 mGpsTitle.setText("模拟位置:");
                 mGpsTitle.setTextColor(Color.RED);
                 mGpsText.setText(location.getLongitude()+","+location.getLatitude());
@@ -224,10 +228,14 @@ public class MainActivity extends Activity implements AMapLocationListener {
         unbindService(mockConnetion);
     }
 
+    /**
+     * 该方法为网络定位的位置的回调，通过高德SDK获取到
+     * @param aMapLocation
+     */
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (mListener != null && aMapLocation != null) {
-            Log.i(MockService.TAG, "onLocationChanged aMapLocation:" + aMapLocation.getLongitude() + "," + aMapLocation.getLatitude());
+            //Log.i(MockService.TAG, "onLocationChanged aMapLocation:" + aMapLocation.getLongitude() + "," + aMapLocation.getLatitude());
             mListener.onLocationChanged(aMapLocation);// 显示系统小蓝点
             mGpsTitle.setText("真实位置:");
             mGpsTitle.setTextColor(Color.BLACK);

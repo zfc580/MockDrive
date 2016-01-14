@@ -5,6 +5,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -30,16 +31,16 @@ public class FloatCrtlView extends LinearLayout {
     private float yInView;
     private int statusBarHeight;
 
-    private CustomButton topBtn,bottomBtn,leftBtn,rightBtn;
-    private CustomButton lefttopBtn,righttopBtn,leftbottomBtn,rightbottomBtn;
+    private CustomButton topBtn,leftBtn,rightBtn;
     private ImageView middleBtn;
+    private Button mGearBtn;
+
+    public Button getGearBtn(){
+        return mGearBtn;
+    }
 
     public CustomButton getTopBtn() {
         return topBtn;
-    }
-
-    public CustomButton getBottomBtn() {
-        return bottomBtn;
     }
 
     public CustomButton getLeftBtn() {
@@ -54,22 +55,6 @@ public class FloatCrtlView extends LinearLayout {
         return middleBtn;
     }
 
-    public CustomButton getLefttopBtn() {
-        return lefttopBtn;
-    }
-
-    public CustomButton getRighttopBtn() {
-        return righttopBtn;
-    }
-
-    public CustomButton getLeftbottomBtn() {
-        return leftbottomBtn;
-    }
-
-    public CustomButton getRightbottomBtn() {
-        return rightbottomBtn;
-    }
-
     public FloatCrtlView(Context context) {
         super(context);
 
@@ -77,13 +62,9 @@ public class FloatCrtlView extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.float_panel, this);
         topBtn = (CustomButton)findViewById(R.id.top);
         leftBtn = (CustomButton)findViewById(R.id.left);
-        bottomBtn = (CustomButton)findViewById(R.id.bottom);
         rightBtn = (CustomButton)findViewById(R.id.right);
         middleBtn = (ImageView) findViewById(R.id.middle);
-        lefttopBtn = (CustomButton) findViewById(R.id.left_top);
-        righttopBtn = (CustomButton) findViewById(R.id.right_top);
-        leftbottomBtn = (CustomButton) findViewById(R.id.left_bottom);
-        rightbottomBtn = (CustomButton) findViewById(R.id.right_bottom);
+        mGearBtn = (Button) findViewById(R.id.gear);
     }
 
     public void setParams(WindowManager.LayoutParams params){

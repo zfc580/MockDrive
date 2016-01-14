@@ -31,18 +31,13 @@ public class MockService extends Service {
     public final static int TO_LEFT = 1;
     public final static int TO_RIGHT = 2;
     public final static int TO_TOP = 3;
-    public final static int TO_BOTTOM = 4;
-    public final static int TO_LEFTTOP = 5;
-    public final static int TO_RIGHTTOP = 6;
-    public final static int TO_LEFTBOTTOM = 7;
-    public final static int TO_RIGHTBOTTOM = 8;
+
     public final static int MODE_CYCLE = 9;
-    public final static int MODE_ONCE = 10;
 
     public final static double[] XIAMEN = {118.089423,24.478933};
     private static boolean isMocking = false;
 
-    private static int dis = 11;
+    private static int[] dis_array = {13,25,32};
 
     private MyWindowManager mManager;
     private LocationHandler locationHandler;
@@ -59,7 +54,7 @@ public class MockService extends Service {
     //点击次数
     private static int i,j,k,l,m,n,o,p;
     //转化成投影坐标的x,y
-    private int x,y;
+    private int x,y,bearing;
     //当前的位置
     private Location mLocation;
 
@@ -98,9 +93,11 @@ public class MockService extends Service {
         if(MainActivity.localLocation != null){
             mLocation.setLatitude(MainActivity.localLocation.getLatitude());
             mLocation.setLongitude(MainActivity.localLocation.getLongitude());
+            mLocation.setBearing(MainActivity.localLocation.getBearing());
         }else {
             mLocation.setLatitude(XIAMEN[1]);
             mLocation.setLongitude(XIAMEN[0]);
+            mLocation.setBearing(0);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -110,10 +107,9 @@ public class MockService extends Service {
         mManager.setBtnGestureListener(new MyWindowManager.IGestureListener() {
             @Override
             public void onShowPress(View view, MotionEvent event) {
-                isMocking = false;
                 Message msg = locationHandler.obtainMessage();
                 msg.arg1 = MODE_CYCLE;
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.left:
                         Log.i(TAG, "left onShowPress.");
                         msg.what = TO_LEFT;
@@ -125,26 +121,6 @@ public class MockService extends Service {
                     case R.id.top:
                         Log.i(TAG, "top onShowPress.");
                         msg.what = TO_TOP;
-                        break;
-                    case R.id.bottom:
-                        Log.i(TAG, "bottom onShowPress.");
-                        msg.what = TO_BOTTOM;
-                        break;
-                    case R.id.left_top:
-                        Log.i(TAG, "left_top onShowPress.");
-                        msg.what = TO_LEFTTOP;
-                        break;
-                    case R.id.right_top:
-                        Log.i(TAG, "right_top onShowPress.");
-                        msg.what = TO_RIGHTTOP;
-                        break;
-                    case R.id.left_bottom:
-                        Log.i(TAG, "left_bottom onShowPress.");
-                        msg.what = TO_LEFTBOTTOM;
-                        break;
-                    case R.id.right_bottom:
-                        Log.i(TAG, "right_bottom onShowPress.");
-                        msg.what = TO_RIGHTBOTTOM;
                         break;
                 }
                 locationHandler.sendMessage(msg);
@@ -165,7 +141,7 @@ public class MockService extends Service {
             @Override
             public void onSingleTap(View view, MotionEvent event) {
                 isMocking = false;
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.left:
                         Log.i(TAG, "left button tap. currentThread:" + Thread.currentThread().getId());
                         mockGpsPoint(TO_LEFT);
@@ -178,30 +154,10 @@ public class MockService extends Service {
                         Log.i(TAG, "top button tap. currentThread:" + Thread.currentThread().getId());
                         mockGpsPoint(TO_TOP);
                         break;
-                    case R.id.bottom:
-                        Log.i(TAG, "bottom button tap. currentThread:" + Thread.currentThread().getId());
-                        mockGpsPoint(TO_BOTTOM);
-                        break;
-                    case R.id.left_top:
-                        Log.i(TAG, "left_top button tap. currentThread:" + Thread.currentThread().getId());
-                        mockGpsPoint(TO_LEFTTOP);
-                        break;
-                    case R.id.right_top:
-                        Log.i(TAG, "right_top button tap. currentThread:" + Thread.currentThread().getId());
-                        mockGpsPoint(TO_RIGHTTOP);
-                        break;
-                    case R.id.left_bottom:
-                        Log.i(TAG, "left_bottom button tap. currentThread:" + Thread.currentThread().getId());
-                        mockGpsPoint(TO_LEFTBOTTOM);
-                        break;
-                    case R.id.right_bottom:
-                        Log.i(TAG, "right_bottom button tap. currentThread:" + Thread.currentThread().getId());
-                        mockGpsPoint(TO_RIGHTBOTTOM);
-                        break;
                 }
             }
-
         });
+
 
     }
 
@@ -241,24 +197,12 @@ public class MockService extends Service {
             if(loc != null){
                 mLocation.setLatitude(loc.getLatitude());
                 mLocation.setLongitude(loc.getLongitude());
-                reset();
                 Message msg = locationHandler.obtainMessage();
                 msg.arg1 = MODE_CYCLE;
                 msg.arg1 = -1;
                 locationHandler.sendMessage(msg);
             }
         }
-    }
-
-    private static void reset(){
-        i = 0;
-        j = 0;
-        k = 0;
-        l = 0;
-        m = 0;
-        n = 0;
-        o = 0;
-        p = 0;
     }
 
     class LocationHandler extends Handler{
@@ -270,21 +214,24 @@ public class MockService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            isMocking = true;
+
             int diretion = msg.what;
             int mode = msg.arg1;
 
             Log.i(MockService.TAG, "LocationHandler.handleMessage loc=" + mLocation);
             if(lm != null && mLocation != null){
                 if(mode == MODE_CYCLE){
+                    isMocking = true;
                     while (true){
                         if(!isMocking){
                             break;
                         }
-                        Log.i(MockService.TAG, "thread:"+Thread.currentThread().getId()+"; "
-                                +mLocation.getLongitude() + "," + mLocation.getLatitude());
 
                         mockGpsPoint(diretion);
+
+                        Log.i(MockService.TAG, "thread:" + Thread.currentThread().getId() +
+                                ",bearing=" + bearing + ", x="+x+",y="+y+",isMocking="+isMocking);
+
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
@@ -309,33 +256,37 @@ public class MockService extends Service {
         x = xy[0];
         y = xy[1];
         if(diretion == TO_LEFT){
-            x -= dis;
+            bearing -= 15;
         }else if(diretion == TO_RIGHT){
-            x += dis;
+            bearing += 15;
         }else if(diretion == TO_TOP){
-            y += dis;
-        }else if(diretion == TO_BOTTOM){
-            y -= dis;
-        }else if(diretion == TO_LEFTTOP){
-            y += 0.5*dis;
-            x -= 0.5*dis;
-        }else if(diretion == TO_RIGHTTOP){
-            y += 0.5*dis;
-            x += 0.5*dis;
-        }else if(diretion == TO_LEFTBOTTOM){
-            y -= 0.5*dis;
-            x -= 0.5*dis;
-        }else if(diretion == TO_RIGHTBOTTOM){
-            y -= 0.5*dis;
-            x += 0.5*dis;
+            //处理前进算法
+            double sin = Math.sin(Math.PI*bearing/180.0);
+            double cos = Math.cos(Math.PI*bearing/180.0);
+            int x_dis = (int) (dis_array[mManager.current_Gear]*sin);
+            int y_dis = (int) (dis_array[mManager.current_Gear]*cos);
+            x += x_dis;
+            y += y_dis;
+            Log.i(MockService.TAG, "Math bearing="+bearing+",sin="+sin+",cos="+cos+", x_dis="+x_dis+",y_dis="+y_dis);
+
         }
 
         //3.将偏移后的UTM坐标转为经纬度坐标；
         String str = "50 R "+ x + " " + y;
         double[] latlon = ConverUtil.utm2LatLon(str);
+        Log.i(MockService.TAG, "utmLatlon="+utmLatlon+",getLatitude="+mLocation.getLatitude()+",getLongitude="+mLocation.getLongitude());
+
+        /*同一个经纬度，经纬度转UTM，UTM转经纬度，经纬度再转UTM后，y总是会减1，该算法有误差
+        Log.i(MockService.TAG, "utmLatlon1="+str+",latlon1="+latlon[0]+",latlon2="+latlon[1]);
+        String utmLatlon0 = ConverUtil.latLon2UTM(latlon[0], latlon[1]);
+        int[] xy0 = UTM2Xy(utmLatlon0);
+        String str0 = "50 R "+ xy0[0] + " " + xy0[1];
+        double[] latlon0 = ConverUtil.utm2LatLon(str0);
+        Log.i(MockService.TAG, "utmLatlon2="+utmLatlon0+",latlon2="+latlon0[0]+",latlon2="+latlon0[1]);*/
 
         mLocation.setLatitude(latlon[0]);
         mLocation.setLongitude(latlon[1]);
+        mLocation.setBearing(bearing);
         mLocation.setAccuracy(70);
         mLocation.setSpeed(11);
         mLocation.setTime(System.currentTimeMillis());

@@ -23,20 +23,12 @@
         android:layout_height="60dip"
         android:text="＜"
         android:layout_alignBottom="@id/middle"/>
-    <com.fucaizhou.view.CustomButton
-        android:id="@+id/left_top"
+    <Button
+        android:id="@+id/gear"
+        android:layout_above="@id/left"
         android:layout_toLeftOf="@id/top"
         android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:text="┌"
-        android:layout_alignBottom="@id/top"/>
-    <com.fucaizhou.view.CustomButton
-        android:id="@+id/right_top"
-        android:layout_toRightOf="@id/top"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:text="┐"
-        android:layout_alignBottom="@id/top"/>
+        android:layout_height="60dip" />
     <com.fucaizhou.view.CustomButton
         android:id="@+id/right"
         android:layout_toRightOf="@id/middle"
@@ -44,25 +36,4 @@
         android:layout_height="60dip"
         android:text="＞"
         android:layout_alignBottom="@id/middle"/>
-    <com.fucaizhou.view.CustomButton
-        android:id="@+id/bottom"
-        android:layout_below="@id/middle"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:text="∨"
-        android:layout_alignLeft="@id/top"/>
-    <com.fucaizhou.view.CustomButton
-        android:id="@+id/left_bottom"
-        android:layout_toLeftOf="@id/bottom"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:text="└"
-        android:layout_below="@id/left"/>
-    <com.fucaizhou.view.CustomButton
-        android:id="@+id/right_bottom"
-        android:layout_toRightOf="@id/bottom"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:text="┘"
-        android:layout_below="@id/right"/>
 </RelativeLayout>

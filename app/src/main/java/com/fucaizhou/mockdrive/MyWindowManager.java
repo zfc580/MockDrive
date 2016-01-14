@@ -1,12 +1,14 @@
 package com.fucaizhou.mockdrive;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -18,6 +20,11 @@ import com.fucaizhou.view.FloatCrtlView;
  */
 public class MyWindowManager {
 
+    private final static String TAG = "MyWindowManager";
+    private static final String[] gears={"1档","2档","3档"};
+
+    public static int current_Gear;
+
     private Context mContext;
 
     private static MyWindowManager instance;
@@ -28,32 +35,42 @@ public class MyWindowManager {
 
     private WindowManager mWindowManger;
 
-    public CustomButton leftBtn,rightBtn,topBtn,bottomBtn;
-    public CustomButton lefttopBtn,righttopBtn,leftbottomBtn,rightbottomBtn;
+    public CustomButton leftBtn,rightBtn,topBtn;
     public ImageView middleBtn;
+    public Button mGearBtn;
+    private SharedPreferences mSharedPreference;
 
     private MyWindowManager(Context context){
         mContext = context;
+        mSharedPreference = mContext.getSharedPreferences("MockDrive",Context.MODE_PRIVATE);
         floatView = new FloatCrtlView(mContext);
         leftBtn = floatView.getLeftBtn();
         rightBtn = floatView.getRightBtn();
         topBtn = floatView.getTopBtn();
-        bottomBtn = floatView.getBottomBtn();
         middleBtn = floatView.getMiddleBtn();
-        lefttopBtn = floatView.getLefttopBtn();
-        righttopBtn = floatView.getRighttopBtn();
-        leftbottomBtn = floatView.getLeftbottomBtn();
-        rightbottomBtn = floatView.getRightbottomBtn();
+
+        mGearBtn = floatView.getGearBtn();
+        mGearBtn.setText(gears[mSharedPreference.getInt("gear",0)]);
+        mGearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int gear = mSharedPreference.getInt("gear",0);
+                current_Gear = (gear + 1) % (gears.length);
+                mSharedPreference.edit().putInt("gear",current_Gear).apply();
+                mGearBtn.setText(gears[current_Gear]);
+            }
+        });
     }
 
     public static MyWindowManager createInstance(Context context){
         if(instance == null){
-            instance = new MyWindowManager(context);
+            instance = new MyWindowManager(context.getApplicationContext());
         }
         return instance;
     }
 
     public void addFloatView(){
+
         mWindowManger = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         int screenWidth = mWindowManger.getDefaultDisplay().getWidth();
         int screenHeight = mWindowManger.getDefaultDisplay().getHeight();
@@ -85,15 +102,7 @@ public class MyWindowManager {
         leftBtn.setGestureListener(listener);
         rightBtn.setGestureListener(listener);
         topBtn.setGestureListener(listener);
-        bottomBtn.setGestureListener(listener);
-        lefttopBtn.setGestureListener(listener);
-        righttopBtn.setGestureListener(listener);
-        leftbottomBtn.setGestureListener(listener);
-        rightbottomBtn.setGestureListener(listener);
-
     }
-
-
 
     public void removeFloatView(){
         if (mWindowManger != null) {
@@ -101,6 +110,7 @@ public class MyWindowManager {
             mWindowManger = null;
         }
     }
+
 
     public interface IGestureListener{
 
