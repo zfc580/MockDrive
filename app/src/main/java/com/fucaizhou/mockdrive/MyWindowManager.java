@@ -82,7 +82,7 @@ public class MyWindowManager {
                 floatParams.format = PixelFormat.RGBA_8888;
                 floatParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | LayoutParams.FLAG_NOT_FOCUSABLE;
-                floatParams.gravity = Gravity.LEFT | Gravity.TOP;
+                floatParams.gravity = Gravity.START | Gravity.TOP;
                 floatParams.width = 500;
                 floatParams.height = 500;
                 floatParams.x = screenWidth;

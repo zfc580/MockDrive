@@ -17,9 +17,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.location.LocationManagerProxy;
-import com.amap.api.location.LocationProviderProxy;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.LocationSource;
@@ -40,8 +39,8 @@ public class MainActivity extends Activity implements AMapLocationListener {
     private MapView mapView;
     private AMap aMap;
     Marker marker;
+    public AMapLocationClient mLocationClient = null;
     LocationSource.OnLocationChangedListener mListener;
-    private LocationManagerProxy mAMapLocationManager;
     private LocationListener mGoogleLocListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +50,10 @@ public class MainActivity extends Activity implements AMapLocationListener {
         mapView = (MapView) findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);// 必须要写
         aMap = mapView.getMap();
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        //设置定位回调监听
+        mLocationClient.setLocationListener(this);
         // 设置定位监听
         aMap.setLocationSource(new LocationSource() {
             @Override
@@ -58,23 +61,19 @@ public class MainActivity extends Activity implements AMapLocationListener {
                 Log.i(MockService.TAG, "MainActivity activate.");
                 mListener = onLocationChangedListener;
 
-                if (mAMapLocationManager == null) {
-                    mAMapLocationManager = LocationManagerProxy.getInstance(MainActivity.this);
-                    //请求网络位置
-                    mAMapLocationManager.requestLocationData(
-                            LocationProviderProxy.AMapNetwork, 2000, 10, MainActivity.this);
+                if(mLocationClient != null){
+                    //启动定位
+                    mLocationClient.startLocation();
                 }
             }
 
             @Override
             public void deactivate() {
                 Log.i(MockService.TAG, "MainActivity deactivate.");
-                mListener = null;
-                if (mAMapLocationManager != null) {
-                    mAMapLocationManager.removeUpdates(MainActivity.this);
-                    mAMapLocationManager.destroy();
+                if(mLocationClient != null){
+                    mLocationClient.stopLocation();
+                    mLocationClient = null;
                 }
-                mAMapLocationManager = null;
             }
         });
         // 设置默认定位按钮是否显示
@@ -150,7 +149,7 @@ public class MainActivity extends Activity implements AMapLocationListener {
                 if(mListener != null){
                     mListener.onLocationChanged(location);// 显示系统小蓝点
                 }
-                //Log.i(MockService.TAG, "onLocationChanged location:" + location.getLongitude() + "," + location.getLatitude());
+                Log.i(MockService.TAG, "onLocationChanged GPS/NET mode = "+location.getProvider()+" location:" + location.getLongitude() + "," + location.getLatitude());
                 mGpsTitle.setText("模拟位置:");
                 mGpsTitle.setTextColor(Color.RED);
                 mGpsText.setText(location.getLongitude()+","+location.getLatitude());
@@ -172,9 +171,9 @@ public class MainActivity extends Activity implements AMapLocationListener {
 
             }
         };
-        mGoogleLocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //mGoogleLocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //请求GPS位置
-        mGoogleLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mGoogleLocListener);
+        //mGoogleLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mGoogleLocListener);
 
         Intent intent = new Intent(MainActivity.this, MockService.class);
         startService(intent);
@@ -224,7 +223,7 @@ public class MainActivity extends Activity implements AMapLocationListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mGoogleLocManager.removeUpdates(mGoogleLocListener);
+        //mGoogleLocManager.removeUpdates(mGoogleLocListener);
         mapView.onDestroy();
         unbindService(mockConnetion);
     }
@@ -236,7 +235,8 @@ public class MainActivity extends Activity implements AMapLocationListener {
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (mListener != null && aMapLocation != null) {
-            //Log.i(MockService.TAG, "onLocationChanged aMapLocation:" + aMapLocation.getLongitude() + "," + aMapLocation.getLatitude());
+            int code = aMapLocation.getErrorCode();
+            Log.i(MockService.TAG, "errorCode = "+ code +" onLocationChanged Network aMapLocation:" + aMapLocation.getLongitude() + "," + aMapLocation.getLatitude());
             mListener.onLocationChanged(aMapLocation);// 显示系统小蓝点
             mGpsTitle.setText("真实位置:");
             mGpsTitle.setTextColor(Color.BLACK);
@@ -247,23 +247,4 @@ public class MainActivity extends Activity implements AMapLocationListener {
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 }

@@ -90,7 +90,8 @@ public class MockService extends Service {
         initFloatviews();
 
         mLocation = new Location(providerName);
-        if(MainActivity.localLocation != null){
+        if(MainActivity.localLocation != null && MainActivity.localLocation.getLatitude() != 0 &&
+                MainActivity.localLocation.getLongitude() != 0){
             mLocation.setLatitude(MainActivity.localLocation.getLatitude());
             mLocation.setLongitude(MainActivity.localLocation.getLongitude());
             mLocation.setBearing(MainActivity.localLocation.getBearing());

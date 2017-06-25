@@ -34,7 +34,8 @@
             android:name=".HelpActivity"
             android:label="@string/help_text_title" >
         </activity>
-        <service android:name=".MockService"></service>
+        <service android:name=".MockService"/>
+        <service android:name="com.amap.api.location.APSService"/>
     </application>
 
 </manifest>
